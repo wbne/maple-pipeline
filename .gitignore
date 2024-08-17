@@ -1,0 +1,7 @@
+__pycache__/
+spreadsheet_id.txt
+token.json
+credentials.json
+*.mp4
+*.png
+*.csv

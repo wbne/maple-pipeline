@@ -1,0 +1,9 @@
+subprocess
+opencv-python
+glob
+numpy
+pytesseract
+opencv-contrib-python
+google-api-python-client 
+google-auth-httplib2 
+google-auth-oauthlib
