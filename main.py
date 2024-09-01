@@ -1,3 +1,5 @@
+import sys
+
 from video_segmenter import execute_script
 from ah_item_extractor import *
 from upload_to_gsuite import upload_csv
@@ -13,10 +15,14 @@ Notes:
 '''
 
 def main():
+    sheet_name = None
+    if len(sys.argv) > 1:
+        print("Appending data.csv to " + sys.argv[1])
+        sheet_name = sys.argv[1]
     execute_script()
     page_to_item()
     item_to_text()
-    upload_csv()
+    upload_csv(sheet_name)
     delete_images()
 
 if __name__ == "__main__": main()

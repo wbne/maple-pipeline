@@ -13,7 +13,7 @@ from googleapiclient.errors import HttpError
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 
-def upload_csv():
+def upload_csv(sheet):
     """Shows basic usage of the Sheets API.
     Prints values from a sample spreadsheet.
     """
@@ -51,16 +51,17 @@ def upload_csv():
         if os.path.exists("spreadsheet_id.txt"):
             with open("spreadsheet_id.txt", 'r') as file:
                 spreadsheet_id = file.readline()
-            body = {
-                "requests":{
-                    "addSheet":{
-                        "properties":{
-                            "title": sheet_name
+            if(sheet == None):
+                body = {
+                    "requests":{
+                        "addSheet":{
+                            "properties":{
+                                "title": sheet_name
+                            }
                         }
                     }
                 }
-            }
-            service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=body).execute()
+                service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=body).execute()
         else:
             sheet = service.spreadsheets()
             spreadsheet = {
@@ -82,7 +83,10 @@ def upload_csv():
         with open('data.csv', newline='') as f:
             reader = csv.reader(f)
             values = list(reader)
+        if(sheet != None):
+            sheet_name = sheet
         response = service.spreadsheets().values().append(spreadsheetId=spreadsheet_id, valueInputOption='USER_ENTERED', range=sheet_name, body={"values": values}).execute()
+        print(response)
 
         print("-------- UPLOADED CSV TO GOOGLE SHEETS --------")
     except HttpError as err:
