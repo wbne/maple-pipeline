@@ -1,32 +1,77 @@
 ﻿#Requires AutoHotkey v2.0
-#Persistent  ; Keeps the script running
-#SingleInstance force  ; Prevents running multiple instances
-Run "C:\Users\pilklover420\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Nexon\MapleStory.lnk"
 
-F1::  ; Assigning the hotkey to F1. You can change it to whatever key you prefer
-{
-    Send, {Left}    ; Left arrow key
-    Sleep, 100      ; Small delay (100 ms)
-    Send, {Enter}   ; Enter key
-    Sleep, 100
-    Send, {Down 4}  ; Down arrow key pressed 4 times
-    Sleep, 100
-    Send, {Enter}   ; Enter key
-    Sleep, 100
-    Send, {Escape}  ; Escape key
-    Sleep, 100
-    Send, {Right}   ; Right arrow key
-    Sleep, 100
-    Send, {Down 4}  ; Down arrow key pressed 4 times
-    Sleep, 100
-    Send, {Enter}   ; Enter key
+Log_Item(name, filename) {
+	; Click "Market Price"
+	MouseMove(313, 101)
+	Click()
+	Sleep(1000)
+
+	; Enter an item into the AH search bar
+	CoordMode("Mouse", "Screen")
+	x:= 219
+	y:= 54
+	MouseMove(x, y)
+	Sleep(100)
+	Click()
+	Sleep(1000)
+	Send("{Backspace 20}")
+	Sleep(1000)
+	Send("{Backspace 20}")
+	Sleep(1000)
+	Send(name)
+	Sleep(1000)
+	Send("{Enter}")
+	Sleep(3000)
+	Send("{Enter}")
+
+	; Start recording the screen while clicking "Next" 13 times
+	Send("{LWin down}{Shift down}r{Shift up}{LWin up}")
+	Sleep(5000)
+	MouseMove(271, 174)
+	Click("down")
+	Sleep(1000)
+	MouseMove(1000, 675)
+	Click("up")
+	Sleep(1000)
+	MouseMove(590, 33)
+	Click()
+	Sleep(6000)
+	MouseMove(675, 136)
+
+	Loop 13 {
+		Click()
+		Sleep(750)
+	}
+	Send("{Alt down}{Tab}{Alt up}")
+	Sleep(500)
+	MouseMove(615, 30)
+	Click()
+
+	; Save the video to the right destination
+	Sleep(6000)
+	Send("^s")
+	Sleep(6000)
+	Send(filename)
+	Send("{Tab}")
+	Sleep(500)
+	Send("{Tab}")
+	Sleep(500)
+	Send("{Enter}")
+	Sleep(500)
+	Send("{Left}")
+	Sleep(500)
+	Send("{Enter}")
+	Sleep(5000)
+
+	; Close Snipping Tool
+	Send("{Alt Down}{F4}{Alt Up}")
+	Sleep(5000)
 }
 
-; TODO: Move mouse to search bar
-; 	Type in items we want to search
-;	Start recording screen
-;	Click right 13 times
-;	End recording and save as movie.mov
-;	Quit game
-;	Run python script
-;	Write status somewhere?
+Home:: {
+	Log_Item("Spell Trace", "vid1")
+	Log_Item("Sol Erda Fragment", "vid2")
+}
+
+Log_Item("Spell Trace", "vid1")
+Log_Item("Sol Erda Fragment", "vid2")

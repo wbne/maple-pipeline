@@ -6,14 +6,14 @@ import re
 import csv
 
 # Here we're hard coding since we know the height is gonna be 1100 pixels
-# Usually there should be 50px of padding on the tip and bottom
+# Usually there should be 50px of padding on the top and bottom
 def page_to_item():
     images = [cv2.imread(file) for file in glob.glob("./images/*.png")]
-    top_buffer = -50
-    bottom_buffer = 50
-    right_buffer = -55
-    left_buffer = 150
-    item_size = 111
+    top_buffer = -5
+    bottom_buffer = 5
+    right_buffer = -1
+    left_buffer = 50
+    item_size = 55
     counter = 0
     for image in images:
         image = image[bottom_buffer:top_buffer, :]
@@ -33,6 +33,10 @@ def read_date(image):
     return text
 
 def item_to_text():
+    TIME_COMPLETED_SIZE = 150
+    PER_ITEM_SIZE = 100
+    TOTAL_ITEM_SIZE = 225
+    UPPER_HALF = 20
     pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
     images = [cv2.imread(file) for file in glob.glob("./items/*.png")]
     kernel = np.ones((3,3),np.uint8)
@@ -40,23 +44,30 @@ def item_to_text():
         writer = csv.writer(file)
         writer.writerow(["Item", "Total Price", "Per Price", "Date"])
         for image in images:
-            date_image = image[:, -220:]
-            image = image[:, :-220]
-            raw_text = pytesseract.image_to_string(image)
+            date_image = image[:, -TIME_COMPLETED_SIZE:]
+            image = image[:, :-TIME_COMPLETED_SIZE]
+
+            per_item_image = image[:-UPPER_HALF, -PER_ITEM_SIZE:]
+            image = image[:, :-PER_ITEM_SIZE]
+
+            total_item_image = image[:-UPPER_HALF, -TOTAL_ITEM_SIZE:]
+            name_image = image[:, :-TOTAL_ITEM_SIZE]
+
             date = read_date(date_image)
-            num_newlines = len(raw_text.split("\n")) - 1
-            text = re.split("\\n", raw_text)[num_newlines - 1]
-            split = re.split("([A-Za-z])\\s([0-9(])", text)
-            try:
-                item_name = split[0] + split[1]
-                prices = re.split("\\)\\s\\(", (split[2] + split[3]).replace(".", ","))
-                if len(prices) > 1:
-                    total_price = re.sub("[^0-9]", "", prices[0])
-                    per_price = re.sub("[^0-9]", "", prices[1])
+            price = pytesseract.image_to_string(per_item_image)
+            price = price.replace(".", "").replace(",", "").replace("\n", "")
+            total_price = pytesseract.image_to_string(total_item_image)
+            total_price = total_price.replace(".", "").replace(",", "").replace("\n", "")
+            name = pytesseract.image_to_string(name_image)
+            name = name.replace("\n", "")
+
+            # TODO: Make this logic better.
+            if len(price) > 0 and len(date) > 0:
+                if(price.isnumeric()):
+                    writer.writerow([name, total_price, price, date])
                 else:
-                    total_price = re.sub("[^0-9]", "", prices[0])
-                    per_price = ''
-                writer.writerow([item_name, total_price, per_price, date])
-            except:
-                print('\tIgnoring bad OCR: ' + raw_text, split)
+                    print('\tIgnoring bad OCR: ' + str([name, total_price, price, date]))
+            else:
+                print('\tIgnoring bad OCR: ' + str([name, total_price, price, date]))
+
     print("-------- WROTE DATA TO CSV --------")

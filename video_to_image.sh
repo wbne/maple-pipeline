@@ -1,2 +1,7 @@
-ffmpeg -y -i videos/video.mp4 -vf "crop=1500:1100:500:300, select=gt(scene\,0.0075)" -vsync 0 images/page-%03d.png
+counter=1
+for video in videos/*
+do
+	ffmpeg -y -i $video -vf "select=gt(scene\,0.0075)" -vsync 0 images/page_$counter-%03d.png
+	counter=counter+1
+done
 echo "FINISHED PROCESSING VIDEO"

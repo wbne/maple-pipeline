@@ -1,6 +1,4 @@
-subprocess
 opencv-python
-glob
 numpy
 pytesseract
 opencv-contrib-python

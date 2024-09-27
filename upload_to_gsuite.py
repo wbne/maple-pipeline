@@ -14,6 +14,11 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 
 def upload_csv(sheet):
+    # Here we're just testing if the data exists
+    # If it doesn't then we just return
+    if not os.path.isfile("data.csv"):
+        print("-------- EMPTY DATA FILE --------")
+        return
     """Shows basic usage of the Sheets API.
     Prints values from a sample spreadsheet.
     """
